@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { Send } from 'lucide-react';
+import { Send, MessageCircle } from 'lucide-react';
 import ChatMessage from './ChatMessage';
 
 const ChatWindow = () => {
@@ -54,17 +54,20 @@ const ChatWindow = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-4xl mx-auto p-4 bg-gray-100">
-      <motion.h1 
-        className="text-3xl font-bold mb-6 text-center text-blue-600"
+    <div className="flex flex-col h-screen max-w-4xl mx-auto p-4 bg-gradient-to-br from-indigo-100 to-purple-100">
+      <motion.div 
+        className="bg-white rounded-t-3xl shadow-lg p-6 mb-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        Legal Chatbot
-      </motion.h1>
+        <h1 className="text-3xl font-bold text-center text-indigo-700 flex items-center justify-center">
+          <MessageCircle className="mr-2" size={32} />
+          LegalSathi
+        </h1>
+      </motion.div>
       <motion.div 
-        className="flex-1 overflow-y-auto p-6 bg-white rounded-2xl shadow-xl"
+        className="flex-1 overflow-y-auto p-6 bg-white rounded-3xl shadow-xl mb-4"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
@@ -75,20 +78,20 @@ const ChatWindow = () => {
           ))}
         </div>
         {isTyping && (
-          <div className="flex items-center space-x-2 text-gray-500 mt-4">
-            <span className="text-sm">Bot is typing</span>
+          <div className="flex items-center space-x-2 text-indigo-500 mt-4">
+            <span className="text-sm font-medium">Bot is typing</span>
             <motion.div
-              className="w-2 h-2 bg-gray-400 rounded-full"
+              className="w-2 h-2 bg-indigo-500 rounded-full"
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut" }}
             />
             <motion.div
-              className="w-2 h-2 bg-gray-400 rounded-full"
+              className="w-2 h-2 bg-indigo-500 rounded-full"
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut", delay: 0.2 }}
             />
             <motion.div
-              className="w-2 h-2 bg-gray-400 rounded-full"
+              className="w-2 h-2 bg-indigo-500 rounded-full"
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut", delay: 0.4 }}
             />
@@ -97,7 +100,7 @@ const ChatWindow = () => {
         <div ref={messagesEndRef} />
       </motion.div>
       <motion.div 
-        className="mt-6 flex"
+        className="flex"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
@@ -107,13 +110,13 @@ const ChatWindow = () => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
-          className="flex-1 p-4 border border-gray-300 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-sm sm:text-base"
+          className="flex-1 p-4 border border-indigo-300 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none text-sm sm:text-base"
           placeholder="Type your message..."
           rows="3"
         />
         <motion.button
           onClick={sendMessage}
-          className="px-6 bg-blue-500 text-white rounded-r-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="px-6 bg-indigo-600 text-white rounded-r-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
