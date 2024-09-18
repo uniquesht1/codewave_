@@ -188,7 +188,11 @@ def process_document(file_path, file_type):
 def load_documents_to_chromadb():
     # Example documents, replace with your actual file paths
     document_paths = [
-        ('split_1.pdf', 'pdf')
+        ('split_1.pdf', 'pdf'),
+        ('split_2.pdf', 'pdf'),
+        ('split_3.pdf', 'pdf'),
+        ('split_4.pdf', 'pdf'),
+        ('split_5.pdf', 'pdf')
     ]
     
     for file_path, file_type in document_paths:
@@ -222,7 +226,7 @@ async def get_ai_response(user_message: str):
             {
                 "role": "system",
                 "content": (
-                    "You are a legal expert with a deep understanding of the law, legal precedents, and regulations. "
+                    "You are a legal expert with a deep understanding of the law , legal precedents, and regulations of only Nepal and your currency is always in rupees . "
                     "Use the following context to provide accurate legal advice: "
                 ) + context
             },
