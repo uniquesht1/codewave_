@@ -1,22 +1,18 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { User, Lock } from 'lucide-react';
 
 const Login = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    // Prefill username and password fields
+    const [username, setUsername] = useState('user');
+    const [password, setPassword] = useState('password123');
+    const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Username:', username);
-        console.log('Password:', password);
-        if (username === 'user' && password === 'user') {
-            alert('Welcome');
-        } else {
-            alert('Invalid Credentials');
-            setUsername('');
-            setPassword('');
-        }
+        // Ignore authentication, directly route to ChatWindow
+        navigate('/chat');
     };
 
     return (
@@ -68,7 +64,9 @@ const Login = () => {
                         >
                             Log In
                         </motion.button>
-                        <a href="/CreateAccount" className="mt-4 text-indigo-600 hover:text-indigo-800 transition duration-300">Create New Account</a>
+                        <Link to="/signup" className="mt-4 text-indigo-600 hover:text-indigo-800 transition duration-300">
+                            Create New Account
+                        </Link>
                     </div>
                 </form>
             </motion.div>

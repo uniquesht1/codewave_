@@ -1,15 +1,11 @@
 // src/App.jsx
 import React from 'react';
-import CreateAccount from './components/CreateAccount';
-import Login from './components/Login';
-import ChatWindow from './components/ChatWindow';
+import { Outlet } from 'react-router-dom';
 
 function App() {
   return (
     <div className="App">
-      <CreateAccount />
-      <Login />
-      <ChatWindow />
+      <Outlet /> {/* This will render child routes */}
     </div>
   );
 }

@@ -189,10 +189,10 @@ def load_documents_to_chromadb():
     # Example documents, replace with your actual file paths
     document_paths = [
         ('split_1.pdf', 'pdf'),
-        # ('split_2.pdf', 'pdf'),
-        # ('split_3.pdf', 'pdf'),
-        # ('split_4.pdf', 'pdf'),
-        # ('split_5.pdf', 'pdf')
+        ('split_2.pdf', 'pdf'),
+        ('split_3.pdf', 'pdf'),
+        ('split_4.pdf', 'pdf'),
+        ('split_5.pdf', 'pdf')
     ]
     
     for file_path, file_type in document_paths:
@@ -236,7 +236,7 @@ async def get_ai_response(user_message: str):
                 "content": user_message
             }
         ],
-        "max_tokens": 300,
+        "max_tokens": 250,
         "temperature": 0.7,
         "top_p": 0.9,
         "top_k": 50,

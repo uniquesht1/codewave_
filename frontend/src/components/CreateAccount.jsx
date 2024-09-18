@@ -1,25 +1,24 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { User, Mail, Lock, Phone, Calendar } from 'lucide-react';
 
 const SignUp = () => {
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [dateOfBirth, setDateOfBirth] = useState('');
+    // Prefilled input values
+    const [username, setUsername] = useState('john_doe'); // Example username
+    const [email, setEmail] = useState('john@example.com'); // Example email
+    const [password, setPassword] = useState('password123'); // Example password
+    const [confirmPassword, setConfirmPassword] = useState('password123'); // Example confirm password
+    const [phoneNumber, setPhoneNumber] = useState('123-456-7890'); // Example phone number
+    const [dateOfBirth, setDateOfBirth] = useState('1990-01-01'); // Example date of birth
+    
+    const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Username:', username);
-        console.log('Email:', email);
-        console.log('Password:', password);
-        console.log('Confirm Password:', confirmPassword);
-        console.log('Phone Number:', phoneNumber);
-        console.log('Date of Birth:', dateOfBirth);
         // Add sign-up logic here
         alert('Account created successfully!');
+        navigate('/login'); // Route to login after sign up
     };
 
     return (
@@ -32,6 +31,7 @@ const SignUp = () => {
             >
                 <h2 className='text-3xl font-bold mb-6 text-center text-indigo-700'>Sign Up</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* Username Input */}
                     <div className="relative">
                         <User className="absolute top-3 left-3 text-gray-400" size={20} />
                         <input
@@ -44,6 +44,8 @@ const SignUp = () => {
                             required
                         />
                     </div>
+                    
+                    {/* Email Input */}
                     <div className="relative">
                         <Mail className="absolute top-3 left-3 text-gray-400" size={20} />
                         <input
@@ -56,6 +58,8 @@ const SignUp = () => {
                             required
                         />
                     </div>
+
+                    {/* Password Input */}
                     <div className="relative">
                         <Lock className="absolute top-3 left-3 text-gray-400" size={20} />
                         <input
@@ -68,6 +72,8 @@ const SignUp = () => {
                             required
                         />
                     </div>
+
+                    {/* Confirm Password Input */}
                     <div className="relative">
                         <Lock className="absolute top-3 left-3 text-gray-400" size={20} />
                         <input
@@ -80,6 +86,8 @@ const SignUp = () => {
                             required
                         />
                     </div>
+
+                    {/* Phone Number Input */}
                     <div className="relative">
                         <Phone className="absolute top-3 left-3 text-gray-400" size={20} />
                         <input
@@ -91,6 +99,8 @@ const SignUp = () => {
                             onChange={(e) => setPhoneNumber(e.target.value)}
                         />
                     </div>
+
+                    {/* Date of Birth Input */}
                     <div className="relative">
                         <Calendar className="absolute top-3 left-3 text-gray-400" size={20} />
                         <input
@@ -101,6 +111,7 @@ const SignUp = () => {
                             onChange={(e) => setDateOfBirth(e.target.value)}
                         />
                     </div>
+
                     <div className='flex flex-col items-center'>
                         <motion.button 
                             className='w-full bg-indigo-600 text-white py-2 rounded-full hover:bg-indigo-700 transition duration-300'
