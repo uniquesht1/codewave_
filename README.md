@@ -1,6 +1,6 @@
-# CodeWave LegalBot
+# CodeWave LegalSathi
 
-CodeWave LegalBot is an AI-powered chatbot designed to improve access to justice in Nepal. This chatbot provides users with legal document explanations, basic legal advice, and assistance in understanding their rights. It's built with modern web technologies and uses advanced machine learning models to generate accurate legal responses.
+CodeWave LegalSathi is an AI-powered chatbot designed to improve access to justice in Nepal. This chatbot provides users with legal document explanations, basic legal advice, and assistance in understanding their rights. It's built with modern web technologies and uses advanced machine learning models to generate accurate legal responses.
 
 ## Table of Contents
 - [Features](#features)
