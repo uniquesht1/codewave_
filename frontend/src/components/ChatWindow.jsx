@@ -3,6 +3,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Send, MessageCircle } from 'lucide-react';
 import ChatMessage from './ChatMessage';
+import { useNavigate } from 'react-router-dom';
 
 const ChatWindow = () => {
   const [messages, setMessages] = useState([
@@ -12,6 +13,8 @@ const ChatWindow = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  const navigate = useNavigate();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -53,8 +56,33 @@ const ChatWindow = () => {
     }
   };
 
+  const handleLogout = () => {
+    navigate('/login');
+  };
+
   return (
-    <div className="flex flex-col h-screen max-w-4xl mx-auto p-4 bg-gradient-to-br from-indigo-100 to-purple-100">
+    <div className="flex flex-col h-screen max-w-4xl mx-auto p-4 bg-gradient-to-br from-indigo-100 to-purple-100 relative">
+      {/* Top-right button container */}
+      <div className="absolute top-4 right-4 space-x-4">
+        <motion.button
+          className="bg-indigo-600 text-white px-4 py-2 rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-300 ease-in-out shadow-md"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => alert('Coming Soon...')}
+        >
+          Contact Lawyer
+        </motion.button>
+        <motion.button
+          className="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors duration-300 ease-in-out shadow-md"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleLogout}
+        >
+          Sign Out
+        </motion.button>
+      </div>
+
+      {/* Header */}
       <motion.div 
         className="bg-white rounded-t-3xl shadow-lg p-6 mb-4"
         initial={{ opacity: 0, y: -20 }}
@@ -66,6 +94,8 @@ const ChatWindow = () => {
           LegalSathi
         </h1>
       </motion.div>
+
+      {/* Messages */}
       <motion.div 
         className="flex-1 overflow-y-auto p-6 bg-white rounded-3xl shadow-xl mb-4"
         initial={{ opacity: 0, scale: 0.9 }}
@@ -99,6 +129,8 @@ const ChatWindow = () => {
         )}
         <div ref={messagesEndRef} />
       </motion.div>
+
+      {/* Input field and send button */}
       <motion.div 
         className="flex"
         initial={{ opacity: 0, y: 20 }}
