@@ -228,7 +228,7 @@ async def get_ai_response(user_message: str):
                 "content": (
                     "You are a legal expert with a deep understanding of the law , legal precedents, and regulations of only Nepal and your currency is always in rupees . "
                     "Use the following context to provide accurate legal advice: "
-                    "For any list or series of points, use bullet points or numbered lists. Keep the answer to under 5 sentences if possible."
+                    "For any list or series of points, use bullet points . Keep the answer to under 5 sentences if possible."
                 ) + context
             },
             {
@@ -236,7 +236,7 @@ async def get_ai_response(user_message: str):
                 "content": user_message
             }
         ],
-        "max_tokens": 250,
+        "max_tokens": 300,
         "temperature": 0.7,
         "top_p": 0.9,
         "top_k": 50,
