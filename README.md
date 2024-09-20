@@ -2,9 +2,11 @@
 
 CodeWave LegalSathi is an AI-powered chatbot designed to improve access to justice in Nepal. This chatbot provides users with legal document explanations, basic legal advice, and assistance in understanding their rights. It's built with modern web technologies and uses advanced machine learning models to generate accurate legal responses.
 
-[DEMO Site](https://example.com)
+<a href="https://legalsathi.netlify.app/" target="_blank">DEMO Site</a>
 
-[DEMO Video](https://examplevideo.com)
+<a href="https://www.youtube.com/watch?v=d1sSLV4-Mns" target="_blank">DEMO Video</a>
+
+
 ## Table of Contents
 - [Features](#features)
 - [Technology Stack](#technology-stack)
