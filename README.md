@@ -2,6 +2,9 @@
 
 CodeWave LegalSathi is an AI-powered chatbot designed to improve access to justice in Nepal. This chatbot provides users with legal document explanations, basic legal advice, and assistance in understanding their rights. It's built with modern web technologies and uses advanced machine learning models to generate accurate legal responses.
 
+[DEMO Site](https://example.com)
+
+[DEMO Video](https://examplevideo.com)
 ## Table of Contents
 - [Features](#features)
 - [Technology Stack](#technology-stack)
@@ -38,8 +41,8 @@ CodeWave LegalSathi is an AI-powered chatbot designed to improve access to justi
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/uniquesht1/codewave_legalbot.git
-    cd codewave_legalbot
+    git clone https://github.com/uniquesht1/codewave_legalsathi.git
+    cd codewave_legalsathi
     ```
 
 2. Set up the backend:
@@ -54,7 +57,8 @@ CodeWave LegalSathi is an AI-powered chatbot designed to improve access to justi
     - Set up environment variables:
       Create a `.env` file in the `backend` folder and add the necessary environment variables:
       ```bash
-      TOGETHER_API_KEY=your_api_key
+      TOGETHER_AI_API_KEY=your_api_key
+      TOGETHER_API_URL=your_URL_key
       ```
 
 3. Set up the frontend:
@@ -75,7 +79,7 @@ CodeWave LegalSathi is an AI-powered chatbot designed to improve access to justi
       cd backend
       uvicorn main:app --reload
       ```
-    - The backend should now be running on `http://localhost:8000`.
+    - The backend should now be running on `http://127.0.0.1:8000`.
 
 2. **Run the Frontend**:
     - Start the React development server:
@@ -83,11 +87,11 @@ CodeWave LegalSathi is an AI-powered chatbot designed to improve access to justi
       cd ../frontend
       npm start
       ```
-    - The frontend should now be accessible at `http://localhost:3000`.
+    - The frontend should now be accessible at `http://localhost:5173`.
 
 ## Usage
 
-Once the application is running, visit the frontend at `http://localhost:3000` and interact with the chatbot. You can ask legal questions, seek advice on rights, or request assistance with legal documentation.
+Once the application is running, visit the frontend at `http://localhost:5173` and interact with the chatbot. You can ask legal questions, seek advice on rights, or request assistance with legal documentation.
 
 ## Contributing
 
