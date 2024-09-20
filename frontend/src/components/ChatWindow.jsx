@@ -43,7 +43,7 @@ const ChatWindow = () => {
       }, 500 + Math.random() * 1000);
     } catch (error) {
       setTimeout(() => {
-        setMessages(prev => [...prev, { message: 'Error connecting to server', sender: 'bot' }]);
+        setMessages(prev => [...prev, { message: 'Sorry, I am not connected to the backend server.', sender: 'bot' }]);
         setIsTyping(false);
       }, 500);
     }
