@@ -1,120 +1,3 @@
-# import os
-# import httpx
-# import logging
-# import traceback
-# from fastapi import FastAPI, HTTPException
-# from fastapi.middleware.cors import CORSMiddleware
-# from pydantic import BaseModel
-# from dotenv import load_dotenv
-
-# # Load environment variables from the .env file
-# load_dotenv()
-
-# app = FastAPI()
-
-# # Add CORS middleware to allow requests from the frontend
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["http://localhost:5173"],  # React frontend URL
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
-
-# # Set up logging for debugging
-# logging.basicConfig(level=logging.INFO)
-
-# # Define a request model for the chatbot
-# class Message(BaseModel):
-#     message: str
-
-# # Get TogetherAI API key from the environment variable
-# TOGETHER_AI_API_KEY = os.getenv("TOGETHER_AI_API_KEY")
-# TOGETHER_AI_URL = "https://api.together.xyz/v1/completions"
-
-# # Function to call TogetherAI API
-# async def get_ai_response(user_message: str):
-#     headers = {
-#         "Authorization": f"Bearer {TOGETHER_AI_API_KEY}",
-#         "Content-Type": "application/json"
-#     }
-
-#     payload = {
-#         "model": "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",  # Correct model name
-#         "messages": [
-#             {
-#                 "role": "system",  # Set up the context and instructions
-#                 "content": (
-#                     "You are a legal expert with a deep understanding of the law, legal precedents, and regulations. "
-#                     "You specialize in providing accurate, concise legal advice based on legal documents. "
-#                     "Please provide responses as if you are a licensed attorney, and cite any relevant laws or cases where applicable."
-#                 )
-#             },
-#             {
-#                 "role": "user",  # User's query
-#                 "content": user_message
-#             }
-#             ],
-#             "max_tokens": 512,
-#             "temperature": 0.5,  # Reduced randomness for more precise legal responses
-#             "top_p": 0.9,
-#             "top_k": 50,
-#             "repetition_penalty": 1.2,  # Increase penalty to avoid repetitive legal jargon
-#             "stop": ["<|eot_id|>", "<|eom_id|>"],
-#             "stream": False
-#         }
-
-
-#     try:
-#         # Increase the timeout to 30 seconds
-#         async with httpx.AsyncClient(timeout=30) as client:
-#             response = await client.post(TOGETHER_AI_URL, json=payload, headers=headers)
-
-#         logging.info(f"API Response Headers: {response.headers}")
-
-#         # Check for rate limiting (HTTP 429)
-#         if response.status_code == 429:
-#             reset_time = int(response.headers.get('x-ratelimit-reset', 60))  # default to 60 seconds
-#             logging.warning(f"Rate limit exceeded. Retrying after {reset_time} seconds...")
-#             time.sleep(reset_time)  # Wait for the rate limit to reset
-#             return await get_ai_response(user_message)  # Retry after waiting
-
-#         # Handle a successful response
-#         if response.status_code == 200:
-#             data = response.json()
-#             # Ensure "choices" exists and has content
-#             if "choices" in data and len(data["choices"]) > 0:
-#                 return data["choices"][0].get("text", "").strip()
-#             else:
-#                 raise HTTPException(status_code=500, detail="Invalid response format from TogetherAI")
-#         else:
-#             raise HTTPException(status_code=response.status_code, detail=f"Error from TogetherAI: {response.text}")
-
-#     except httpx.ReadTimeout:
-#         logging.error("API request timed out")
-#         raise HTTPException(status_code=504, detail="The request to the API timed out. Please try again later.")
-
-#     except Exception as e:
-#         logging.error(traceback.format_exc())
-#         raise HTTPException(status_code=500, detail="An error occurred while processing the request.")
-
-# # Basic route to handle chat messages
-# @app.post("/chat")
-# async def chat_response(msg: Message):
-#     user_message = msg.message.lower()
-
-#     try:
-#         ai_response = await get_ai_response(user_message)
-#         return {"response": ai_response}
-#     except HTTPException as http_err:
-#         # Handle specific HTTP-related errors
-#         return {"response": f"Error: {http_err.detail}"}
-#     except Exception as e:
-#         # Catch-all for other errors with logging for debugging
-#         logging.error(traceback.format_exc())
-#         return {"response": "Sorry, something went wrong. Please try again later."}
-
-
 
 import os
 import httpx
@@ -124,18 +7,21 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
-import chromadb
+import sqlite3
+import numpy as np
 from chromadb.utils import embedding_functions
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import TextLoader, PyPDFLoader
-import tempfile
+from langchain_community.document_loaders import PyPDFLoader
+import chromadb
+from pathlib import Path
 
 # Load environment variables
 load_dotenv()
 
+# Initialize FastAPI app
 app = FastAPI()
 
-# CORS middleware
+# CORS middleware setup
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],  # Add your frontend domain here
@@ -146,21 +32,36 @@ app.add_middleware(
 
 # Logging setup
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Pydantic model for chat input
 class Message(BaseModel):
     message: str
 
-# API keys and URLs
-TOGETHER_AI_API_KEY = os.getenv("TOGETHER_AI_API_KEY")
-TOGETHER_AI_URL = "https://api.together.xyz/v1/completions"
-
-# ChromaDB setup
-chroma_client = chromadb.Client()
+# Embedding function setup
 embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
 
-# Create or load your ChromaDB collection (name can be anything you want)
-collection = chroma_client.create_collection(name="my_documents", embedding_function=embedding_function)
+# Initialize ChromaDB client
+chroma_client = chromadb.Client()
+
+# Create or get the collection
+collection = chroma_client.create_collection(name="legal_documents")
+
+# SQLite Database setup
+def create_db():
+    conn = sqlite3.connect('embeddings.db')
+    c = conn.cursor()
+    c.execute('''
+    CREATE TABLE IF NOT EXISTS embeddings (
+        id TEXT PRIMARY KEY,
+        document TEXT,
+        metadata TEXT,
+        embedding BLOB
+    )
+    ''')
+    conn.commit()
+    conn.close()
+    logger.info("SQLite database initialized")
 
 # Text splitting function for chunking documents
 def split_text(text):
@@ -171,40 +72,87 @@ def split_text(text):
     )
     return text_splitter.split_text(text)
 
-# Document processing function (modify this for your use case)
+# Document processing function
 def process_document(file_path, file_type):
     if file_type == 'pdf':
         loader = PyPDFLoader(file_path)
         pages = loader.load_and_split()
         return [page.page_content for page in pages]
-    elif file_type == 'txt':
-        with open(file_path, 'r') as file:
-            text = file.read()
-        return split_text(text)
     else:
         raise ValueError(f"Unsupported file type: {file_type}")
 
-# Pre-load documents into ChromaDB (use this for your own documents)
-def load_documents_to_chromadb():
-    # Example documents, replace with your actual file paths
+# Function to check if a document has already been processed
+def document_exists_in_db(file_path):
+    conn = sqlite3.connect('embeddings.db')
+    c = conn.cursor()
+    c.execute('SELECT COUNT(*) FROM embeddings WHERE id LIKE ?', (f"{file_path}%",))
+    count = c.fetchone()[0]
+    conn.close()
+    return count > 0
+
+# Function to save embeddings to SQLite database
+def save_embedding_to_sqlite(doc_id, chunk, metadata, embedding):
+    conn = sqlite3.connect('embeddings.db')
+    c = conn.cursor()
+    embedding_array = np.array(embedding, dtype=np.float32)
+    c.execute(
+        'INSERT OR REPLACE INTO embeddings (id, document, metadata, embedding) VALUES (?, ?, ?, ?)',
+        (doc_id, chunk, str(metadata), embedding_array.tobytes())
+    )
+    conn.commit()
+    conn.close()
+
+# Pre-load documents into SQLite and ChromaDB
+def load_documents():
     document_paths = [
         ('split_1.pdf', 'pdf'),
         ('split_2.pdf', 'pdf'),
         ('split_3.pdf', 'pdf'),
         ('split_4.pdf', 'pdf'),
-        ('split_5.pdf', 'pdf')
+        ('split_5.pdf', 'pdf') # Add more document paths as needed
     ]
     
     for file_path, file_type in document_paths:
+        if document_exists_in_db(file_path):
+            logger.info(f"Skipping {file_path} as it's already in the database")
+            continue
+
+        logger.info(f"Processing {file_path}")
         chunks = process_document(file_path, file_type)
 
         for i, chunk in enumerate(chunks):
-            collection.add(
-                documents=[chunk],  # Add the chunk of text
-                metadatas=[{"source": file_path, "chunk": i}],  # Metadata
-                ids=[f"{file_path}_chunk_{i}"]  # Unique ID for each chunk
-            )
-    print("Documents successfully loaded into ChromaDB!")
+            embedding = embedding_function([chunk])
+            doc_id = f"{file_path}_chunk_{i}"
+            metadata = {"source": file_path, "chunk": i}
+            save_embedding_to_sqlite(doc_id, chunk, metadata, embedding[0])
+        
+        logger.info(f"Finished processing {file_path}")
+
+# Function to load embeddings from SQLite and add to ChromaDB
+def load_embeddings_to_chromadb():
+    if collection.count() > 0:
+        logger.info("ChromaDB collection already populated, skipping loading")
+        return
+
+    conn = sqlite3.connect('embeddings.db')
+    c = conn.cursor()
+    c.execute('SELECT id, document, metadata, embedding FROM embeddings')
+    rows = c.fetchall()
+    conn.close()
+
+    for row in rows:
+        doc_id, document, metadata, embedding_blob = row
+        embedding = np.frombuffer(embedding_blob, dtype=np.float32)
+        
+        # Add embeddings to ChromaDB
+        collection.add(
+            documents=[document],
+            metadatas=[eval(metadata)],  # Convert string metadata back to dict
+            ids=[doc_id],
+            embeddings=[embedding.tolist()]  # Convert numpy array to list
+        )
+    
+    logger.info(f"Loaded {len(rows)} embeddings into ChromaDB")
 
 # Function to get AI response from TogetherAI
 async def get_ai_response(user_message: str):
@@ -216,7 +164,7 @@ async def get_ai_response(user_message: str):
 
     # Send the request to TogetherAI with context
     headers = {
-        "Authorization": f"Bearer {TOGETHER_AI_API_KEY}",
+        "Authorization": f"Bearer {os.getenv('TOGETHER_AI_API_KEY')}",
         "Content-Type": "application/json"
     }
 
@@ -226,9 +174,9 @@ async def get_ai_response(user_message: str):
             {
                 "role": "system",
                 "content": (
-                    "You are a legal expert with a deep understanding of the law , legal precedents, and regulations of only Nepal and your currency is always in rupees . "
+                    "You are a legal expert with a deep understanding of the law, legal precedents, and regulations of only Nepal and your currency is always in rupees. "
                     "Use the following context to provide accurate legal advice: "
-                    "For any list or series of points, use bullet points . Keep the answer to under 5 sentences if possible."
+                    "For any list or series of points, use bullet points. Keep the answer to under 5 sentences if possible."
                 ) + context
             },
             {
@@ -247,7 +195,7 @@ async def get_ai_response(user_message: str):
 
     try:
         async with httpx.AsyncClient(timeout=30) as client:
-            response = await client.post(TOGETHER_AI_URL, json=payload, headers=headers)
+            response = await client.post(os.getenv('TOGETHER_AI_URL'), json=payload, headers=headers)
 
         if response.status_code == 200:
             data = response.json()
@@ -259,11 +207,11 @@ async def get_ai_response(user_message: str):
             raise HTTPException(status_code=response.status_code, detail=f"Error from TogetherAI: {response.text}")
 
     except httpx.ReadTimeout:
-        logging.error("API request timed out")
+        logger.error("API request timed out")
         raise HTTPException(status_code=504, detail="The request to the API timed out. Please try again later.")
 
     except Exception as e:
-        logging.error(traceback.format_exc())
+        logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail="An error occurred while processing the request.")
 
 # Chat endpoint for querying the chatbot
@@ -277,14 +225,17 @@ async def chat_response(msg: Message):
     except HTTPException as http_err:
         return {"response": f"Error: {http_err.detail}"}
     except Exception as e:
-        logging.error(traceback.format_exc())
+        logger.error(traceback.format_exc())
         return {"response": "Sorry, something went wrong. Please try again later."}
 
-# Pre-load your documents into ChromaDB once before starting the server
-load_documents_to_chromadb()
+# Initialize the database and load documents
+@app.on_event("startup")
+async def startup_event():
+    create_db()
+    load_documents()
+    load_embeddings_to_chromadb()
 
 # Uvicorn server start
 if __name__ == "__main__":
+    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-

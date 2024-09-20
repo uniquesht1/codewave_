@@ -1,0 +1,9 @@
+fastapi
+httpx
+pydantic
+python-dotenv
+chromadb
+langchain
+langchain-community
+pdfplumber
+tempfile
