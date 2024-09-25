@@ -6,6 +6,11 @@ CodeWave LegalSathi is an AI-powered chatbot designed to improve access to justi
 
 <a href="https://www.youtube.com/watch?v=d1sSLV4-Mns" target="_blank">DEMO Video</a>
 
+## Contributions:
+- [Sachin Koirala](https://github.com/cruvss)
+- [Sajal Poudel](https://github.com/mousekeys)
+- [Unique Shrestha](https://github.com/uniquesht1)
+- [Utsab Chandra Kayastha](https://github.com/UtsavCK)
 
 ## Table of Contents
 - [Features](#features)
